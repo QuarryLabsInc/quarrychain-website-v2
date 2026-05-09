@@ -97,7 +97,7 @@ function HeroContent({
         <h1 className={cn("text-4xl md:text-5xl lg:text-6xl font-bold font-display text-text-primary leading-tight", center && "text-center")}>
           {showTokenInHeadline ? (
             <span className="inline-flex items-center justify-center gap-3">
-              <QuarryToken size={56} glow={false} />
+              <QuarryToken size={72} glow={false} />
               <span>{headline}</span>
             </span>
           ) : headline}
