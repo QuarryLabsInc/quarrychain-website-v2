@@ -15,7 +15,7 @@ function SwapAnimation() {
       <div className="relative">
         <QuarryToken
           size={72}
-          spinDuration={14}
+          rockDuration={5}
           glowColor="rgba(20, 184, 166, 0.45)"
         />
       </div>

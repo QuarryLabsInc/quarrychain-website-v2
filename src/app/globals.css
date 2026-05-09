@@ -120,10 +120,12 @@ html {
   animation: gradient 3s linear infinite;
 }
 
-/* Quarry token spin (Y-axis 3D rotation, like a coin) */
-@keyframes qry-spin {
-  from { transform: perspective(800px) rotateY(0deg); }
-  to { transform: perspective(800px) rotateY(360deg); }
+/* Quarry token rock — gentle Y-axis tilt left/right through default state. */
+@keyframes qry-rock {
+  0%, 100% { transform: rotateY(0deg); }
+  25%      { transform: rotateY(var(--qry-rock-angle-neg, -30deg)); }
+  50%      { transform: rotateY(0deg); }
+  75%      { transform: rotateY(var(--qry-rock-angle, 30deg)); }
 }
 
 /* Quarry token glow pulse */

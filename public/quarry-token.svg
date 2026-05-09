@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
 <style>
-.st0{fill:#1c1e2b;}
-.st1{fill:#20232f;}
-.st2{fill:#15171f;}
-.st3{fill:#11131a;}
-.st4{fill:#181a25;}
+.st0{fill:#d8dce5;}
+.st1{fill:#ecf0f5;}
+.st2{fill:#b8bcc7;}
+.st3{fill:#a0a4af;}
+.st4{fill:#c8ccd5;}
 .st5{opacity:0.15;}
 .st6{fill:#00A900;}
 .st7{fill:#EE0000;}
@@ -19,7 +19,7 @@
 .st16{fill:url(#SVGID_2_);}
 .st17{fill:url(#SVGID_3_);}
 .st18{fill:url(#SVGID_4_);}
-.st19{fill:#ffffff;fill-opacity:0.06;}
+.st19{fill:#000000;fill-opacity:0.06;}
 </style>
 		<g>
 			<path class="st0" d="M96.2,61.1c11.4-9.6,23.9-17.2,38.2-21.6c15.8-4.9,31.9-6.6,48.4-5.2c24.5,2.1,47,10.4,68.1,22.7
