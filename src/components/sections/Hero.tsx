@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { ChevronDown } from "lucide-react";
 import BlurFade from "@/components/ui/blur-fade";
@@ -114,14 +115,16 @@ export default function Hero() {
           {/* Headline */}
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold font-display tracking-tight text-text-primary mb-6">
             <TextReveal delay={0.2}>The Blockchain Built</TextReveal>{" "}
-            {/* Gradient text: BlurFade wraps the gradient span so the animation
-                is OUTSIDE the bg-clip-text parent. Motion transforms inside a
-                bg-clip-text parent break the gradient mask — see CLAUDE.md. */}
-            <BlurFade delay={0.4} forceAnimate yOffset={8} duration={0.5} className="inline">
-              <span className="bg-gradient-to-r from-qc-teal to-qc-blue bg-clip-text text-transparent">
-                for What&apos;s Next
-              </span>
-            </BlurFade>
+            {/* Gradient text: motion.span so transform + bg-clip-text are on
+                the SAME element — no descendant stacking context conflict. */}
+            <motion.span
+              className="inline-block bg-gradient-to-r from-qc-teal to-qc-blue bg-clip-text text-transparent"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.5, ease: "easeOut" }}
+            >
+              for What&apos;s Next
+            </motion.span>
           </h1>
 
           {/* Subheadline */}
