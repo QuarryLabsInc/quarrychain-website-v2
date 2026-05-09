@@ -389,6 +389,21 @@ Alec clarified after the initial Session 11 wrap that QRY will launch as a **sta
 - [x] New combined asset [public/logo-icon-wordmark.svg](public/logo-icon-wordmark.svg) — base64-embedded `logo-original.png` + Space Grotesk Bold wordmark loaded from Google Fonts via `@import`. Self-contained 7.5KB. Card 1 download serves this.
 - [x] Removed temp QRY Token "Frame comparison" block that was added earlier in the session for dark vs light A/B.
 
+### Session 14 — QRY token placements + hero text fixes + ICO register button (Completed 2026-05-09)
+
+**Token placements:**
+- [x] Homepage `<Tokenomics />` donut chart: `<QuarryToken size={150} glow={false} />` in the donut hole center; floating hover pill above chart shows slice name · token count · percentage on hover (replaced "200M / QRY Total" center text)
+- [x] `/tokenomics` page hero: `showTokenInHeadline` prop added to `PageHero` — renders token inline-flex left of headline text. Size 72px.
+- [x] `PageHero` extended with `showTokenInHeadline?: boolean` prop + `QuarryToken` import
+
+**Hero text fixes:**
+- [x] `BlurFade` extended with `forceAnimate?: boolean` — skips IntersectionObserver, animates on mount. Same race-condition fix applied to all hero `BlurFade` usages (pill, subheadline, CTAs)
+- [x] "for What's Next" gradient text: replaced `BlurFade` (div) wrapping `bg-clip-text` span with a direct `motion.span` that has both the gradient AND the transform on the same element — no descendant stacking context conflict, no block-element layout break
+
+**ICO page:**
+- [x] "Register for ICO" button added to `/ico` hero via `ctas` prop — links to launchpad app
+- [x] "Try the Beta" on `/developers` NoCodeSection updated to `qc-token-gen.vercel.app`
+
 ### Tier 4 — design lift
 - [ ] Homepage ecosystem section rework: custom interconnected diagram + "View Ecosystem" CTA linking to /ecosystem
 - [ ] Watch Demo video URL (TBD) + CTA on NoCodeSection
@@ -408,4 +423,4 @@ Alec clarified after the initial Session 11 wrap that QRY will launch as a **sta
 - Watch Demo video URL
 - Discord/Telegram/YouTube exact handles TBD
 - Blockscout API availability on testnet TBD
-- Public/stable beta URL for Token Generator (currently points at internal easysite URL)
+- Public/stable beta URL for Token Generator — ✅ resolved: `qc-token-gen.vercel.app` (updated Session 14)

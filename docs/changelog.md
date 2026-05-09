@@ -1,5 +1,55 @@
 # Changelog
 
+## 2026-05-09 — Session 14: QRY token placements + hero text fixes + ICO register button
+
+### What was built
+
+Four thrusts: token placed in the homepage donut chart and /tokenomics hero, hero text bugs fixed permanently, ICO register button wired, and the Token Generator beta URL updated.
+
+#### QRY token in homepage Tokenomics donut
+- Replaced the static "200M / QRY Total" center text with `<QuarryToken size={150} glow={false} />` rocking in the donut hole.
+- Added a floating pill label (absolute top-0 centered) that fades in on slice/legend hover showing `name · token count · percentage` in the slice's accent color. Fades out when nothing is hovered.
+- `data` array in `Tokenomics.tsx` augmented with `tokens` field pulled from `TOKENOMICS_DETAILS[i]?.tokens` (index-matched).
+
+#### QRY token in /tokenomics page hero
+- Added `showTokenInHeadline?: boolean` prop to `PageHero`. When true, wraps the headline in an `inline-flex items-center justify-center gap-3` span with `<QuarryToken size={72} glow={false} />` to the left.
+- `PageHero` imports `QuarryToken` directly (already `"use client"`).
+- `/tokenomics/page.tsx` passes `showTokenInHeadline` to the `PageHero` call.
+- Size iterated 56 → 72 per user feedback ("make it a little larger").
+
+#### Hero text fixes (two root causes)
+- **BlurFade `useInView` race** — all above-fold `BlurFade` usages in `Hero.tsx` (pill, subheadline, CTAs) stayed at `opacity: 0` because IntersectionObserver registered after the element was already in viewport and never saw an out→in transition. Added `forceAnimate?: boolean` to `blur-fade.tsx` that bypasses the observer entirely (`const inView = forceAnimate || inViewFromObserver`). All hero BlurFades now pass `forceAnimate`.
+- **"for What's Next" gradient words disappearing on scroll-back** — `TextReveal` motion.spans (with `y` transforms) were nested inside the `bg-clip-text text-transparent` parent. Descendant transforms create a stacking context that breaks the gradient mask, especially after a compositor invalidation on scroll. Fix per CLAUDE.md rule: replaced with a single `motion.span` that carries both the gradient classes AND the transform (`initial={{ opacity: 0, y: 8 }}` → `animate={{ opacity: 1, y: 0 }}`). Transform and clip on the same element = no conflict.
+- **Block-element gap** — the `BlurFade` (div) wrapper around the gradient span was creating a block-level break inside the `h1`, pushing "for What's Next" down from "Built" with extra vertical space. Fixed by switching to `motion.span` (inline-block), which flows naturally within the headline text.
+
+#### /ico page — Register button
+- Added `ctas` prop to the `/ico` `PageHero` call: `{ text: "Register for ICO", href: "https://quarrychain-4pzmvo3c8-garvonious-uis-projects.vercel.app/", primary: true }`.
+- Button renders below the subheadline using the existing primary CTA style.
+
+#### NoCodeSection beta URL
+- "Try the Beta" href updated from the internal `easysite.ai` URL to `https://qc-token-gen.vercel.app/`.
+
+### Decisions
+- **Token in donut hole over center text.** The "200M / QRY Total" label was redundant (same info in the stat cards below). The rocking coin gives the chart a visual anchor and reinforces brand identity without adding noise.
+- **`forceAnimate` over fixing the root IntersectionObserver race.** The real fix for above-fold content is to skip the observer entirely — there's no meaningful "is it in view?" check when the element is always visible on first paint. `forceAnimate` is explicit about intent, doesn't change behavior for below-fold BlurFades, and is easy to audit.
+- **`motion.span` over `BlurFade` for gradient text.** BlurFade renders a `div`. Even with `className="inline"`, a div breaks the inline text flow of the h1. `motion.span` with `inline-block` stays in flow. The gradient + transform on the same element also eliminates the stacking context issue permanently.
+
+### Files changed
+- **Modified**: `src/components/sections/Tokenomics.tsx` (QuarryToken in hole, hover pill, tokens data field)
+- **Modified**: `src/components/layout/PageHero.tsx` (showTokenInHeadline prop + QuarryToken import)
+- **Modified**: `src/app/tokenomics/page.tsx` (showTokenInHeadline on PageHero)
+- **Modified**: `src/components/ui/blur-fade.tsx` (forceAnimate prop)
+- **Modified**: `src/components/sections/Hero.tsx` (forceAnimate on BlurFades, motion.span gradient text)
+- **Modified**: `src/app/ico/page.tsx` (Register for ICO CTA)
+- **Modified**: `src/components/sections/NoCodeSection.tsx` (beta URL → qc-token-gen.vercel.app)
+- **Modified**: `docs/build-plan.md`, `docs/changelog.md`
+
+### Current status
+- Phase 1 + 1.5 + 2 — ✅ complete
+- Phase 3 — all prior sessions ✅ + **Session 14: token placements (donut + /tokenomics hero) ✅, hero text race + gradient fix ✅, ICO register button ✅, beta URL updated ✅**
+- Remaining: brand PDF redesign · light-mode toggle · real social handles · Sanity Studio team invites · Tier 2 (more token placements TBD by user, team headshots) · Tier 4 (ecosystem diagram, watch-demo URL) · ICO Marketplace future · separate repos (No-Code DApp, quarrychain-ico launchpad) · WP vs deck inconsistency audit.
+- Live on `quarrychain-web.vercel.app` — push to `main` triggers auto-deploy.
+
 ## 2026-05-09 — Session 13: QRY 3D token rework (rocking coin) + brand Logo Files cleanup
 
 ### What was built
