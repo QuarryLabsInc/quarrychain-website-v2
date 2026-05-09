@@ -1,5 +1,82 @@
 # Changelog
 
+## 2026-05-09 — Session 13: QRY 3D token rework (rocking coin) + brand Logo Files cleanup
+
+### What was built
+
+Two thrusts. (1) Reworked yesterday's `<QuarryToken />` from a full-rotation 3D coin into a gentle ±30° rocking flat SVG, dropping the stacked-disc thickness rig entirely. (2) Cleaned up the `/brand` page Logo Files section from 5 cards to 3, replacing the bare-icon "Icon + Wordmark" preview with the actual navbar treatment, and added a live `$QRY 3D Token` card.
+
+#### Session bootstrapped by committing yesterday's uncommitted Session 12 work
+- Yesterday's session left work uncommitted in a sibling worktree (`sweet-bell-6abc6c`): `public/quarry-token.svg`, `src/components/ui/QuarryToken.tsx`, `src/app/globals.css` keyframes, `src/app/ecosystem/quarryswap/page.tsx` call site, `src/components/ui/text-reveal.tsx` race fix, `CLAUDE.md` notes.
+- Committed in two commits on the sibling branch and fast-forward pushed to `origin/main`:
+  - `7708d87` feat: dark-mode QRY token SVG + 3D `<QuarryToken />` component + hero text race fix
+  - `9f49d47` docs: log Session 12 (QRY token logo + 3D component + hero text race fix)
+- Worktree (`fervent-bohr-a6e819`) fast-forwarded to `9f49d47` so today's work runs against the correct base.
+
+#### `<QuarryToken />` v2 — rocking coin
+- **User feedback on yesterday's coin (Session 12 carry-over)**: (1) "looks wider" straight-on because the original SVG art is drawn at a baked-in 3/4 perspective and the flat CSS discs behind it stick out past the asymmetric outline, (2) individual disc layers visible during 360° rotation, (3) too thick (depth 14), (4) wanted to see what a lighter/silver frame looks like.
+- **First iteration** addressed (1)–(3) by tightening the disc rig: `depth 14 → 8`, `edgeLayers 7 → 12`, `bodyInset 7.5% → 12.5%`. Created `quarry-token-light.svg` as a frame-recolored variant (silver `#d8dce5 → #a0a4af`, chrome glints `st19` flipped from white to black at 6% opacity for legibility on light bg). Built a temp 4-up A/B comparison block on `/brand` showing dark/light × original/slim variants.
+- **User reply**: "instead of making it rotate all the way around we have it start in its default state and then just have it rotate a little to the left and then a little to the right so we don't have to worry about the thickness and the layers."
+- **Decision: drop the 3D thickness rig entirely.** Since the rocking motion never exposes the coin edge, the stacked-disc body, the back face, and the perspective-clipped front face all become dead weight. Component is now a single `<Image>` of the SVG inside a parent that animates `rotateY`.
+- **Final params**: ±30° rock through center every 6s (after iterating from 12° → 20° → 30° on user feedback), `ease-in-out` so the motion pauses naturally at the extremes and crosses through the default 0° state on every half-cycle. New CSS custom properties `--qry-rock-angle` / `--qry-rock-angle-neg` let callers override per instance.
+- **`frame` prop dropped, dark variant deleted.** User picked silver. `quarry-token-light.svg` renamed to canonical `quarry-token.svg`; old dark-frame file removed.
+- **Component now**: ~70 lines (was ~140). Props: `size, rockAngle, rockDuration, glow, glowColor, float, rock, className, priority`. Defaults: 240/30/6/glow on/light frame.
+- `globals.css` `qry-spin` keyframe replaced with `qry-rock`. `qry-pulse` and `qry-bob` kept.
+- QuarrySwap swap-animation row call site updated `spinDuration={14}` → `rockDuration={5}`. Auto-picks up the silver frame since `frame` was the only thing it didn't pass.
+
+#### Brand `/brand` Logo Files section cleanup
+- Trimmed the LOGOS array of 5 entries to 2; replaced the uniform `.map()` render with explicit JSX for each of the 3 cards (each card is now visually distinct).
+- Dropped: Wordmark (SVG) `/quarrychain_name.svg`, Original Mark `/logo-original.png`, Nav Icon `/nav_icon.png`.
+- Card 1 "Icon + Wordmark" — preview renders icon + styled "QuarryChain" wordmark inline (Space Grotesk Bold, "Quarry" in `qc-blue`, "Chain" in `text-primary`). Replaces the previous bare-icon-with-mismatched-name approach.
+- Card 2 renamed "Icon Only (SVG)" → "Icon", icon shown at `h-20 w-20`.
+- Card 3 added — live `<QuarryToken size={104} glow={false} />` rocking inside the preview cell. Spotlight glow tinted teal to match the token's brand color. Download link → `/quarry-token.svg`.
+- **Icon source corrected**: initially built the combined SVG with `logo-hero.png` (the navbar version with the green speech-bubble tail). User flagged it as wrong, pointed at `logo-original.png` (clean Q hex, no tail). Card 1 + Card 2 previews + the combined SVG asset all switched to `logo-original.png`. **Navbar and footer left on `logo-hero.png`** per user direction ("leave as is") — accepted mismatch between brand-asset version and live-site version.
+
+#### New combined asset — `public/logo-icon-wordmark.svg`
+- Self-contained 7.5KB SVG. Embeds `logo-original.png` as base64 in an `<image>` element, plus a `<text>` element with "Quarry" / "Chain" tspans.
+- Space Grotesk Bold loaded via `@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700')` inside `<defs><style>`. Falls back to system-ui / sans-serif when the SVG is opened in a tool that can't fetch external fonts.
+- ViewBox 600×140. Icon at (20, 20) sized 100×100, text at (140, 92) at 72px font-size with -0.02em letter-spacing.
+- Card 1 download link points to this file. First time the brand guide has had a working "icon + wordmark" download — previously it served just the bare icon despite the label.
+
+#### Temp design-iteration block on `/brand`
+- During the iteration we added a "Frame comparison" block at the top of `/brand` showing 4 then 2 variants of the token. Removed before commit.
+
+### Decisions
+- **Drop the 3D thickness rig once we committed to a non-rotating motion.** With ±30° rock, you only ever see the front face at varying angles. Stacked discs, back face, and perspective transforms are dead weight. Cleaner code, fewer DOM nodes, no banding/protrusion artifacts ever. Worth the one-way trip — full-rotation 3D coin is a different design that we can re-introduce as a separate component if needed.
+- **Silver frame over dark gunmetal.** The dark frame `#1c1e2b → #11131a` was so close to page bg `#08080f` that the disc silhouette nearly disappeared, leaving only the brand wedges floating in space. Silver gives the artwork something to sit in. The Tier 2 "logo fitted for light mode → needs dark-mode adaptation" build-plan goal turns out to mean "use a light frame on a dark page is fine."
+- **`logo-original.png` is the brand-asset icon, `logo-hero.png` stays as the navbar/footer icon.** User explicitly chose to keep the speech-bubble-tail variant in the live site even after the brand guide standardized on the cleaner version. Documented mismatch.
+- **Combined SVG embeds the icon as base64 PNG, not redrawn vector paths.** We have no SVG of `logo-original.png`. Embedding the PNG keeps the file self-contained at 7.5KB. If we ever need a vector-perfect version, we'd have to redraw the icon as SVG paths.
+- **Google Fonts `@import` for the wordmark text.** Works in browsers (where most users will view it). Tools without internet fall back to sans-serif. Acceptable for a brand-page download since the consumers are mostly working in browsers, Figma, or decks where Space Grotesk is either fetched or installable.
+- **Don't re-render the wordmark as outlined SVG paths.** Would be vector-perfect everywhere but is tedious to generate by hand and locks the wordmark to one font weight. Defer until a real need surfaces.
+- **Logo placements still TBD.** User said "I want to figure out where we are going to add the 3d logo. I'll lyk." Component + asset are production-ready; placements come in a follow-up session.
+
+### Verification
+- `pnpm tsc --noEmit` clean throughout.
+- Lenis smooth-scroll prevents the Claude Preview tool from programmatically scrolling on `/brand` (custom anchor click + wheel events + scrollTop assignment all blocked — Lenis runs a RAF loop that resets scrollTop to its internal target). Verified the changes via direct HTML scrape (`curl localhost:3000/brand | grep`) instead: confirmed only "Icon + Wordmark", "Icon", "$QRY 3D Token" headings present, no traces of the dropped variants or temp comparison block.
+- Loaded `/logo-icon-wordmark.svg` directly in the preview — renders correctly with the clean Q hex (no tail) + "Quarry"/"Chain" wordmark in Space Grotesk Bold.
+
+### Files changed (this session)
+- **New**: `public/logo-icon-wordmark.svg` (combined nav-style logo asset, 7.5KB).
+- **Renamed/replaced**: `public/quarry-token.svg` (was dark-frame, now silver/light-frame — was previously `quarry-token-light.svg`).
+- **Modified**: `src/components/ui/QuarryToken.tsx` (rewritten — flat SVG + rock animation, no thickness rig, no `frame` prop).
+- **Modified**: `src/app/globals.css` (`qry-spin` → `qry-rock` keyframe, with `--qry-rock-angle` custom-property fallbacks).
+- **Modified**: `src/app/ecosystem/quarryswap/page.tsx` (`spinDuration` → `rockDuration`).
+- **Modified**: `src/app/brand/page.tsx` (Logo Files section rewritten: 5 cards → 3, explicit JSX, live `$QRY 3D Token` card).
+- **Modified**: `docs/build-plan.md` (Session 13 entry, Tier 2 token logo updated).
+- **Modified**: `docs/changelog.md` (this entry).
+
+### Issues / gotchas to address
+- **Logo placement still open.** User will identify which body sections should host the `<QuarryToken />`.
+- **Brand-asset icon vs navbar icon mismatch is now documented and intentional** (clean vs tailed). Worth revisiting next time the navbar gets touched — same asset everywhere is the long-run answer.
+- **`logo-original.png` is the new canonical brand icon** but it's still a PNG. Vector source would be ideal. Add to designer asks list.
+- **Lenis blocks programmatic scroll in dev preview tools.** Use `curl + grep` for HTML verification or screenshot at the natural fold position. Future sessions: don't waste time fighting Lenis.
+
+### Current status of overall build
+- Phase 1 + 1.5 + 2 — ✅ complete
+- Phase 3 — Tokenomics page ✅, Sanity CMS ✅, Brand page ✅, Litepaper ✅, Team+Roadmap → Sanity ✅, Hero hex-sphere ✅, Tier 1 copy/data scrubs ✅, QVM restructure ✅, /ecosystem/asset-tokenization ✅, No-Code section ✅, /ico teaser ✅, Tokenomics 4-slice deck swap ✅, Ethereum mainnet correction ✅, QRY token logo dark-mode + 3D component (Session 12) ✅, **3D coin rework as rocking flat SVG + brand Logo Files cleanup + combined icon+wordmark asset ✅ (this session)**.
+- Remaining: brand PDF redesign · light-mode toggle · real social handles · Sanity Studio team invites · Tier 2 (logo placements pending user, team headshots) · Tier 4 (homepage ecosystem diagram, watch-demo URL) · ICO Marketplace future · separate No-Code DApp repo · separate `quarrychain-ico` launchpad repo · WP vs deck inconsistency audit.
+- Live on `quarrychain-web.vercel.app` — push to `main` triggers auto-deploy.
+
 ## 2026-05-08 — Session 12: QRY token logo dark-mode reskin + 3D `<QuarryToken />` component + hero text race fix
 
 ### What was built

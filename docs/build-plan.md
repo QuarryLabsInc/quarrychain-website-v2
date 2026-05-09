@@ -352,7 +352,7 @@ Alec clarified after the initial Session 11 wrap that QRY will launch as a **sta
 - [ ] Once dark-mode assets arrive, integrate on QuarrySwap page + other relevant pages (see Tier 2 below)
 
 ### Tier 2 — asset drop-ins (blocked on designer/photo work)
-- [x] QRY token logo — Alec sent dark-treatable SVG; recolored for dark mode + built reusable 3D `<QuarryToken />` component (Session 12). Currently wired only into the QuarrySwap swap-animation row. **Awaiting Alec's call on which body sections to place it in** — user has explicitly said "not in the hero."
+- [x] QRY token logo — Alec sent dark-treatable SVG; recolored + built reusable 3D `<QuarryToken />` component (Session 12), then reworked Session 13 as a flat-SVG ±30° rocking coin (light/silver frame, no stacked-disc thickness). Currently wired only into the QuarrySwap swap-animation row. **Awaiting Alec's call on which body sections to place it in** — user has explicitly said "not in the hero."
 - [ ] Team headshots to replace abstract cards
 
 ### Session 12 — QRY token logo: dark-mode reskin + 3D coin component + hero text bug fix (Completed 2026-05-08)
@@ -369,8 +369,25 @@ Alec clarified after the initial Session 11 wrap that QRY will launch as a **sta
 - [x] Hero text race ("for What's Next" sometimes invisible, highlight-to-reveal). Diagnosed via DOM eval — all six [Hero.tsx](src/components/sections/Hero.tsx) `<TextReveal>` motion.spans stuck at initial state (`translateY(96px), opacity: 0`). Cause: `useInView({ once: true })` IntersectionObserver registered AFTER the element was already in view during initial paint — IntersectionObserver only fires on transitions, never sees out→in, so the animation never started. Selection rendering bypasses inline `opacity: 0`, which is why highlighting "revealed" the text. Fix: dropped useInView entirely from [text-reveal.tsx](src/components/ui/text-reveal.tsx) — TextReveal is only used in the hero (always in view on first paint), so the gate served no purpose. Animation now runs on mount unconditionally. Verified across 2 cache-busted reloads, all 6 words at `opacity: 1` both times.
 
 **Open after Session 12:**
+- [x] **Uncommitted work** committed at the top of Session 13 (commits `7708d87` feat + `9f49d47` docs, pushed to origin/main).
 - [ ] **Logo placement** — user to identify which body sections should host the `<QuarryToken />`. Component + SVG ready, just need section placements. Pages to consider per Tier 2 build-plan: QuarrySwap (swap-animation token already wired), `/tokenomics` (anywhere not-hero), `/ico` (anywhere not-hero), homepage `<Tokenomics />` section, `<CTA />` background, possibly `/whitepaper` §09 tokenomics.
-- [ ] **Uncommitted work** to be committed once placements land (see "Note for next session" in this file's changelog entry).
+
+### Session 13 — QRY 3D token rework + brand Logo Files cleanup (Completed 2026-05-09)
+
+**Token component v2:**
+- [x] Replaced full Y-axis 360° spin with a gentle ±30° rock (0 → -30° → 0 → +30° → 0 every 6s, ease-in-out). User direction: "we don't have to worry about the thickness and the layers" — the new motion never exposes the edge.
+- [x] Dropped the entire stacked-disc thickness rig (`depth`, `edgeLayers`, `bodyInset` props) along with the front/back face transforms. Component dropped from ~140 lines to ~70.
+- [x] Dropped the `frame` prop and the dark variant SVG entirely (user picked the silver/light frame). `quarry-token-light.svg` renamed to canonical `quarry-token.svg`; old dark-frame file removed.
+- [x] `qry-spin` keyframe replaced with `qry-rock` in [globals.css](src/app/globals.css). New CSS custom properties `--qry-rock-angle` and `--qry-rock-angle-neg` so callers can override per-instance.
+- [x] [QuarrySwap swap-animation row](src/app/ecosystem/quarryswap/page.tsx) call site updated `spinDuration={14}` → `rockDuration={5}`.
+
+**Brand Logo Files section ([src/app/brand/page.tsx](src/app/brand/page.tsx)):**
+- [x] Section trimmed from 5 cards → 3: dropped Wordmark (SVG), Original Mark, Nav Icon.
+- [x] Card 1 ("Icon + Wordmark") rewritten as explicit JSX — preview renders the actual navbar treatment (icon + Space Grotesk Bold "QuarryChain" with blue/white split) instead of just the bare icon image.
+- [x] Card 2 simplified ("Icon Only (SVG)" → "Icon"). Both cards 1 + 2 use `/logo-original.png` (clean Q hex without speech-bubble tail) per user correction. Navbar/footer left on `/logo-hero.png` per user direction ("leave as is").
+- [x] Card 3 added: live `<QuarryToken size={104} glow={false} />` with a Download SVG link to `/quarry-token.svg`.
+- [x] New combined asset [public/logo-icon-wordmark.svg](public/logo-icon-wordmark.svg) — base64-embedded `logo-original.png` + Space Grotesk Bold wordmark loaded from Google Fonts via `@import`. Self-contained 7.5KB. Card 1 download serves this.
+- [x] Removed temp QRY Token "Frame comparison" block that was added earlier in the session for dark vs light A/B.
 
 ### Tier 4 — design lift
 - [ ] Homepage ecosystem section rework: custom interconnected diagram + "View Ecosystem" CTA linking to /ecosystem
