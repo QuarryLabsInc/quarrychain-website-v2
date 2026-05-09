@@ -1,5 +1,57 @@
 # Changelog
 
+## 2026-05-08 — Session 12: QRY token logo dark-mode reskin + 3D `<QuarryToken />` component + hero text race fix
+
+### What was built
+
+Alec sent a `Quarry-token-logo.svg` that was treated for a light-mode site and asked us to integrate it. Three substantive thrusts:
+
+#### 1. Logo optimization + dark-mode recolor
+- The source SVG was 434 KB / 5875 lines. ~96% of that was Adobe Illustrator's `<aipgf i:pgfEncoding="zstd/base64">` block — proprietary editing metadata browsers ignore. Stripped it. Also dropped the `<switch>`/`<foreignObject>` wrapper, the `xmlns:x|i|graph|...` Adobe namespaces, and the `<!DOCTYPE>`/entity declarations. Final: **250 lines, 24 KB**.
+- Two iterations on color. **First pass** changed all ~14 colors at once: dark gunmetal frame, slightly-muted "brand-palette" wedges (red/blue/green snapped to our `#ef4444`/`#3b82f6`/`#22c55e`), and swapped the original near-black Q-letter detail to teal `#14b8a6` to give us 4-color brand presence. **Second pass after Alec feedback** ("keep the logo colors as they were from the beginning, just make the coin part itself a bit darker"): reverted wedges to the original `#00A900 / #00D500` greens, `#EE0000 / #FA2728` reds, `#0060E7 / #009EFF` blues, and the Q-letter detail back to `#151514 / #3C3C3A`. Only `st0–st4` (the silver/light coin frame) became the new dark `#1c1e2b → #11131a` palette. The radial chrome streaks (`st19`) faded to `rgba(255,255,255,0.06)` so they read as soft ambient glow instead of metallic shine.
+- Final SVG lives at [public/quarry-token.svg](public/quarry-token.svg).
+
+#### 2. `<QuarryToken />` component — true 3D coin
+- [src/components/ui/QuarryToken.tsx](src/components/ui/QuarryToken.tsx) — first version was just an `<Image>` of the SVG inside a CSS `transform: rotateY(360deg)` spinner. It looked paper-thin at the 90° edge angle. User asked for "more 3D so it looks like an actual coin when it spins."
+- Rebuilt as a 3D coin: front face (the SVG), back face (same SVG, mirror-flipped via `scaleX(-1)` so the Q-mark reads correctly from behind), and **N stacked metallic discs** between them (default 7) at increasing `translateZ` values. The discs are positioned via a `bodyInset` (default 7.5%) so they match the SVG's actual disc bounds, not the SVG's bounding-box corners — otherwise they peeked out at oblique rotations.
+- At rotation 0°/180°: faces visible, stack hidden behind. At 30–60°: stack peeks past the foreshortened face as a visible "thickness." At ~90°: faces are edge-on (`backface-visibility: hidden` clips them) and you see the stack as a thin vertical strip — that's the coin's spine. Verified at rotation 82° in the preview.
+- Three composable motion modes: `spin` (perspective + rotateY), `glow` (pulsing radial gradient at configurable color), `float` (gentle Y bob). All respect `prefers-reduced-motion`.
+- New keyframes added to [globals.css](src/app/globals.css): `qry-spin`, `qry-pulse`, `qry-bob`.
+
+#### 3. Hero text race fix (`text-reveal.tsx`)
+- Bug report: "the 'For Whats Next' text in the hero disappears, and if you highlight it it reappears."
+- Diagnosed by DOM eval — all six `<TextReveal>` motion.spans inside [Hero.tsx](src/components/sections/Hero.tsx) were stuck at `transform: translateY(96px), opacity: 0` (the initial state of the slide-up reveal). The `useInView({ once: true, margin: "-50px" })` gate never fired its callback.
+- Root cause: IntersectionObserver only emits on entry/exit *transitions*. If the observer registers AFTER the element is already in the viewport (which is what happens during Next.js client-side hydration when the hero is at the top of the page), it never sees an out-→in transition. With `once: true` it can never recover. Result: the animation start never triggers, motion.spans stay at initial state, and `overflow: hidden` on the word wrapper clips the translated text out of view + the `opacity: 0` makes the rest invisible. The "highlight reveals it" tell was the giveaway: text-selection rendering paints its own color independent of inline `opacity: 0`.
+- Why "for What's Next" looked uniquely missing while "The Blockchain Built" looked merely "still loading": same bug across all 6 words, but the gradient half is visually distinct enough to read as "missing" while a stuck slide on the dark/white half just looks like animation pending.
+- Fix: dropped `useInView` from [text-reveal.tsx](src/components/ui/text-reveal.tsx) entirely — confirmed via grep that TextReveal is *only* used in `Hero.tsx`, which is always in view on first paint. The gate served no purpose. Animation now runs on mount unconditionally. Verified across 2 cache-busted reloads, all 6 words at `opacity: 1` both times.
+
+### Decisions
+- **Brand-wedge colors are sacred.** Alec's source values stay (`#00A900` greens, `#EE0000` reds, `#0060E7` blues, `#151514` dark Q-letter). Dark mode = recolor the FRAME only. Don't try to be clever and "snap to brand palette" — Alec specifically caught and reverted that.
+- **Coin frame palette: gunmetal `#1c1e2b → #11131a`.** Slightly above page-bg `#08080f` so the disc reads as a recessed coin against the page, not a hole.
+- **3D via stacked CSS discs, not Three.js extrusion.** The site already uses Three.js for the hero hex-sphere + WireframeShape backdrops, but adding a 4th Three.js scene per page just for a coin is heavy. CSS 3D with `transform-style: preserve-3d` + `perspective` + ~7 absolutely-positioned discs gets the job done with ~9 DOM nodes per coin and looks coin-like at oblique rotations. Three.js extrude stays available for a future "coin-as-page-hero showpiece" if we ever want one.
+- **Token NOT in heroes.** Initial integration put the spinning token at 40% opacity behind the `/tokenomics`, `/ico`, and `/ecosystem/quarryswap` headlines. User feedback was direct: "I dont like them in the hero. I would rather them live in sections. I will identify the areas that we should put them." Both `/tokenomics` and `/ico` reverted to their original PageHero (sphere / dodecahedron). The QuarrySwap swap-animation token (in the body, not hero) was preserved.
+- **Drop `useInView` over architecting around it.** The IntersectionObserver-init race is a real edge case but only matters for above-fold animations. TextReveal had only 2 callsites, both in the hero (above-fold). The simple fix — animate on mount — is more reliable than trying to detect "already in view at observer-registration time" and force-fire the callback. If TextReveal gets used below-fold later, we'd want to bring `useInView` back, but with a fallback path.
+
+### Bugs found / issues to address
+- **Pending: logo placement.** User will identify which body sections should host `<QuarryToken />`. Awaiting Alec's call before any further integration.
+- **Recharts `width(-1)` warnings** persist on `SupplySchedule.tsx` (visible in Session 6 changelog too). Pre-existing, harmless — `ResponsiveContainer` has no measured size at SSG/initial-paint, the chart only renders client-side once `useInView` triggers. Logging only.
+- **HMR didn't pick up the `text-reveal.tsx` change** initially — had to fully restart the dev server before the bug fix took effect. This is consistent with Next.js dev's known flakiness around HMR for `"use client"` components that are deeply nested in the tree. If you ever edit a client-component utility used inside a complex hero/section and the changes don't appear, restart `pnpm dev` instead of debugging the change.
+
+### Files changed (uncommitted as of session end)
+- **New:** `public/quarry-token.svg` (24 KB, dark-mode token)
+- **New:** `src/components/ui/QuarryToken.tsx` (3D coin component)
+- **Modified:** `src/app/globals.css` (+3 keyframes: `qry-spin`, `qry-pulse`, `qry-bob`)
+- **Modified:** `src/app/ecosystem/quarryswap/page.tsx` (QuarryToken replaces "QRY" text-circle in swap animation row)
+- **Modified:** `src/components/ui/text-reveal.tsx` (dropped `useInView` gate — bug fix)
+
+`/tokenomics/page.tsx` and `/ico/page.tsx` were edited mid-session but reverted, so they don't appear in `git diff`.
+
+### Current status of overall build
+- Phase 1 + 1.5 + 2 — ✅ complete
+- Phase 3 — Tokenomics page ✅, Sanity CMS ✅, Brand page ✅, Litepaper ✅, Team+Roadmap → Sanity ✅, Hero hex-sphere ✅, Tier 1 copy/data scrubs ✅, QVM restructure ✅, /ecosystem/asset-tokenization ✅, No-Code section ✅, /ico teaser ✅, Tokenomics 4-slice deck swap ✅, Ethereum mainnet correction ✅, **QRY token logo dark-mode + `<QuarryToken />` component + hero text race fix ✅ (this session, uncommitted)**.
+- Remaining: brand PDF redesign · light-mode toggle · real social handles · Sanity Studio team invites · Tier 2 (logo section placements pending Alec, team headshots) · Tier 4 (homepage ecosystem diagram, watch-demo URL) · ICO Marketplace future · separate No-Code DApp repo · separate `quarrychain-ico` launchpad repo · WP vs deck inconsistency audit.
+- Live on `quarrychain-web.vercel.app` — push to `main` triggers auto-deploy.
+
 ## 2026-04-22 — Session 11 addendum: Ethereum mainnet chain correction + launchpad starter prompt rewrite
 
 ### What changed

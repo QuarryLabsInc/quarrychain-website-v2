@@ -352,8 +352,25 @@ Alec clarified after the initial Session 11 wrap that QRY will launch as a **sta
 - [ ] Once dark-mode assets arrive, integrate on QuarrySwap page + other relevant pages (see Tier 2 below)
 
 ### Tier 2 — asset drop-ins (blocked on designer/photo work)
-- [ ] QRY token logo integration on QuarrySwap + other relevant pages (assets exist but fitted for light mode — need dark-mode adaptation)
+- [x] QRY token logo — Alec sent dark-treatable SVG; recolored for dark mode + built reusable 3D `<QuarryToken />` component (Session 12). Currently wired only into the QuarrySwap swap-animation row. **Awaiting Alec's call on which body sections to place it in** — user has explicitly said "not in the hero."
 - [ ] Team headshots to replace abstract cards
+
+### Session 12 — QRY token logo: dark-mode reskin + 3D coin component + hero text bug fix (Completed 2026-05-08)
+
+**Logo work:**
+- [x] Optimized Alec's `Quarry-token-logo.svg` — stripped Adobe Illustrator's `<aipgf>` editing blob (5600+ lines of zstd/base64 → gone). Final file 250 lines / 24 KB (was 5875 lines / 434 KB).
+- [x] Dark-mode color reskin in [public/quarry-token.svg](public/quarry-token.svg) — frame `st0–st4` darkened to a `#1c1e2b → #11131a` gunmetal palette; brand wedges (`st6/12` green, `st7/11` red, `st8/10` blue) kept exactly as Alec sent them per direct feedback ("keep the logo colors as they were from the beginning"); dark Q-letter detail (`st9/13`) preserved at original `#151514 / #3C3C3A`; chrome glint streaks (`st19`) faded to `rgba(255,255,255,0.06)` — they read as ambient instead of metallic.
+- [x] Built [src/components/ui/QuarryToken.tsx](src/components/ui/QuarryToken.tsx) — true 3D coin via stacked CSS discs (between front/back SVG faces). Props: `size`, `depth` (default 14px), `edgeLayers` (7), `bodyInset` (7.5%, keeps stacked discs aligned with the actual SVG disc, not the bounding box). Animations: `spin` (perspective + rotateY), `glow` (radial pulse), `float` (gentle Y bob). All respect `prefers-reduced-motion`.
+- [x] Added three keyframes to [globals.css](src/app/globals.css): `qry-spin`, `qry-pulse`, `qry-bob`.
+- [x] Wired [QuarrySwap swap-animation row](src/app/ecosystem/quarryswap/page.tsx) — QRY token replaces the plain teal "QRY" text-circle on the left of the swap arrows. USDT placeholder circle on the right unchanged.
+- [x] **Heroes reverted.** Initial integration put the token at 40% opacity behind /tokenomics + /ico headlines (replacing PageHero's wireframe sphere / dodecahedron). User feedback: "I would rather them live in sections." Both pages restored to their original PageHero. Token + component stay on disk waiting for Alec's section placements.
+
+**Bug fix:**
+- [x] Hero text race ("for What's Next" sometimes invisible, highlight-to-reveal). Diagnosed via DOM eval — all six [Hero.tsx](src/components/sections/Hero.tsx) `<TextReveal>` motion.spans stuck at initial state (`translateY(96px), opacity: 0`). Cause: `useInView({ once: true })` IntersectionObserver registered AFTER the element was already in view during initial paint — IntersectionObserver only fires on transitions, never sees out→in, so the animation never started. Selection rendering bypasses inline `opacity: 0`, which is why highlighting "revealed" the text. Fix: dropped useInView entirely from [text-reveal.tsx](src/components/ui/text-reveal.tsx) — TextReveal is only used in the hero (always in view on first paint), so the gate served no purpose. Animation now runs on mount unconditionally. Verified across 2 cache-busted reloads, all 6 words at `opacity: 1` both times.
+
+**Open after Session 12:**
+- [ ] **Logo placement** — user to identify which body sections should host the `<QuarryToken />`. Component + SVG ready, just need section placements. Pages to consider per Tier 2 build-plan: QuarrySwap (swap-animation token already wired), `/tokenomics` (anywhere not-hero), `/ico` (anywhere not-hero), homepage `<Tokenomics />` section, `<CTA />` background, possibly `/whitepaper` §09 tokenomics.
+- [ ] **Uncommitted work** to be committed once placements land (see "Note for next session" in this file's changelog entry).
 
 ### Tier 4 — design lift
 - [ ] Homepage ecosystem section rework: custom interconnected diagram + "View Ecosystem" CTA linking to /ecosystem
