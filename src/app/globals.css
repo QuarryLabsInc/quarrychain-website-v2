@@ -120,6 +120,24 @@ html {
   animation: gradient 3s linear infinite;
 }
 
+/* Quarry token spin (Y-axis 3D rotation, like a coin) */
+@keyframes qry-spin {
+  from { transform: perspective(800px) rotateY(0deg); }
+  to { transform: perspective(800px) rotateY(360deg); }
+}
+
+/* Quarry token glow pulse */
+@keyframes qry-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+
+/* Quarry token gentle float bob */
+@keyframes qry-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *,

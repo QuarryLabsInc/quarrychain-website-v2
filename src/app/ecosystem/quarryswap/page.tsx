@@ -5,6 +5,7 @@ import PageHero from "@/components/layout/PageHero";
 import PageCTA from "@/components/layout/PageCTA";
 import BlurFade from "@/components/ui/blur-fade";
 import SpotlightCard from "@/components/ui/spotlight-card";
+import QuarryToken from "@/components/ui/QuarryToken";
 
 // ===== Animated Swap Visual =====
 
@@ -12,9 +13,11 @@ function SwapAnimation() {
   return (
     <div className="flex items-center justify-center gap-6 py-8">
       <div className="relative">
-        <div className="w-16 h-16 rounded-full bg-qc-teal/20 border border-qc-teal/30 flex items-center justify-center motion-safe:animate-[pulse_3s_ease-in-out_infinite]">
-          <span className="text-sm font-bold font-mono text-qc-teal">QRY</span>
-        </div>
+        <QuarryToken
+          size={72}
+          spinDuration={14}
+          glowColor="rgba(20, 184, 166, 0.45)"
+        />
       </div>
 
       <div className="relative w-12 h-12 flex items-center justify-center">
