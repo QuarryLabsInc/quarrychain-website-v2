@@ -251,7 +251,7 @@ export default function NoCodeSection() {
         <BlurFade delay={0.2}>
           <div className="mt-10 flex flex-wrap gap-3">
             <a
-              href="https://7a90-009-86997-coifsp0uh1dr-deployed-internal.easysite.ai/"
+              href="https://qc-token-gen.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
               className="px-5 py-3 rounded-lg text-sm font-semibold bg-gradient-to-r from-qc-teal/20 to-qc-blue/20 border border-qc-teal/40 text-qc-teal hover:border-qc-teal/60 transition-colors"
