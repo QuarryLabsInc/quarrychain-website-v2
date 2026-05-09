@@ -153,6 +153,13 @@ export default function ICOPage() {
           secondary: "#3b82f6",
           tertiary: "#14b8a6",
         }}
+        ctas={[
+          {
+            text: "Register for ICO",
+            href: "https://quarrychain-4pzmvo3c8-garvonious-uis-projects.vercel.app/",
+            primary: true,
+          },
+        ]}
       />
 
       {/* Rounds */}
