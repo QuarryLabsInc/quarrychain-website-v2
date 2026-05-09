@@ -12,6 +12,10 @@ interface BlurFadeProps {
   yOffset?: number;
   blur?: string;
   once?: boolean;
+  /** Skip IntersectionObserver entirely and animate on mount. Use for
+   *  above-fold content where the element is already in view when the
+   *  observer registers — otherwise the callback never fires. */
+  forceAnimate?: boolean;
 }
 
 export default function BlurFade({
@@ -22,9 +26,11 @@ export default function BlurFade({
   yOffset = 6,
   blur = "6px",
   once = true,
+  forceAnimate = false,
 }: BlurFadeProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once, margin: "-50px" });
+  const inViewFromObserver = useInView(ref, { once, margin: "-50px" });
+  const inView = forceAnimate || inViewFromObserver;
 
   return (
     <motion.div

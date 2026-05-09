@@ -100,7 +100,7 @@ export default function Hero() {
         {/* Content overlay */}
         <div className="relative z-10 mx-auto max-w-4xl px-4 text-center">
           {/* ICO announcement pill */}
-          <BlurFade delay={0.1}>
+          <BlurFade delay={0.1} forceAnimate>
             <a
               href="/ico"
               className="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 mb-8 border border-qc-teal/25 bg-qc-teal/[0.08] text-xs font-mono uppercase tracking-widest text-qc-teal hover:bg-qc-teal/[0.12] hover:border-qc-teal/40 transition-colors group"
@@ -114,20 +114,25 @@ export default function Hero() {
           {/* Headline */}
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold font-display tracking-tight text-text-primary mb-6">
             <TextReveal delay={0.2}>The Blockchain Built</TextReveal>{" "}
-            <span className="bg-gradient-to-r from-qc-teal to-qc-blue bg-clip-text text-transparent">
-              <TextReveal delay={0.4}>for What&apos;s Next</TextReveal>
-            </span>
+            {/* Gradient text: BlurFade wraps the gradient span so the animation
+                is OUTSIDE the bg-clip-text parent. Motion transforms inside a
+                bg-clip-text parent break the gradient mask — see CLAUDE.md. */}
+            <BlurFade delay={0.4} forceAnimate yOffset={8} duration={0.5} className="inline">
+              <span className="bg-gradient-to-r from-qc-teal to-qc-blue bg-clip-text text-transparent">
+                for What&apos;s Next
+              </span>
+            </BlurFade>
           </h1>
 
           {/* Subheadline */}
-          <BlurFade delay={0.35}>
+          <BlurFade delay={0.6} forceAnimate>
             <p className="text-lg md:text-xl text-text-secondary max-w-2xl mx-auto mb-10">
               100,000 TPS. 3-second finality. Minimal fees. Zero compromise.
             </p>
           </BlurFade>
 
           {/* CTAs */}
-          <BlurFade delay={0.5}>
+          <BlurFade delay={0.75} forceAnimate>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
                 href="/ico"
