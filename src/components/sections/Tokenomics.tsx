@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { TOKENOMICS } from "@/lib/constants";
+import { TOKENOMICS, TOKENOMICS_DETAILS } from "@/lib/constants";
 import {
   PieChart,
   Pie,
@@ -9,11 +9,14 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import BlurFade from "@/components/ui/blur-fade";
+import QuarryToken from "@/components/ui/QuarryToken";
+import { cn } from "@/lib/utils";
 
-const data = TOKENOMICS.allocation.map((item) => ({
+const data = TOKENOMICS.allocation.map((item, i) => ({
   name: item.name,
   value: item.percentage,
   color: item.color,
+  tokens: TOKENOMICS_DETAILS[i]?.tokens ?? "",
 }));
 
 export default function Tokenomics() {
@@ -44,68 +47,79 @@ export default function Tokenomics() {
         </BlurFade>
 
         <div className="grid md:grid-cols-2 gap-12 items-center">
-          {/* Chart with center label */}
+          {/* Chart with floating hover label + 3D coin in middle */}
           <BlurFade delay={0.1}>
-            <div className="h-[420px] relative">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  {/* Background ring — inactive slices */}
-                  <Pie
-                    data={data}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={100}
-                    outerRadius={170}
-                    paddingAngle={2}
-                    dataKey="value"
-                    stroke="none"
-                    onMouseEnter={onPieEnter}
-                    onMouseLeave={onPieLeave}
-                    style={{ cursor: "pointer" }}
+            <div className="h-[460px] relative">
+              {/* Floating hover label — fades in when a slice is active */}
+              <div
+                className={cn(
+                  "absolute top-0 left-1/2 -translate-x-1/2 z-10 pointer-events-none",
+                  "rounded-full border border-white/10 bg-bg-secondary/90 backdrop-blur",
+                  "px-4 py-2 transition-all duration-300 ease-out",
+                  activeItem
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 -translate-y-1",
+                )}
+              >
+                <div className="flex items-center gap-2.5 whitespace-nowrap">
+                  <span
+                    className="w-1.5 h-1.5 rounded-full shrink-0"
+                    style={{ backgroundColor: activeItem?.color ?? "transparent" }}
+                  />
+                  <span
+                    className="text-sm font-medium"
+                    style={{ color: activeItem?.color ?? "transparent" }}
                   >
-                    {data.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={entry.color}
-                        opacity={activeIndex !== null && activeIndex !== index ? 0.35 : 1}
-                        stroke={activeIndex === index ? entry.color : "none"}
-                        strokeWidth={activeIndex === index ? 2 : 0}
-                        style={{
-                          transition: "opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), filter 0.8s cubic-bezier(0.4, 0, 0.2, 1), stroke-width 0.5s ease",
-                          filter: activeIndex === index ? `drop-shadow(0 0 12px ${entry.color}50)` : "none",
-                        }}
-                      />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-
-              {/* Center label */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="text-center transition-all duration-500 ease-out">
-                  {activeItem ? (
-                    <>
-                      <p
-                        className="text-3xl font-bold font-display transition-colors duration-500 ease-out"
-                        style={{ color: activeItem.color }}
-                      >
-                        {activeItem.value}%
-                      </p>
-                      <p className="text-xs text-text-secondary max-w-[120px] leading-tight mt-1">
-                        {activeItem.name}
-                      </p>
-                    </>
-                  ) : (
-                    <>
-                      <p className="text-2xl font-bold font-display text-text-primary">
-                        200M
-                      </p>
-                      <p className="text-xs text-text-muted mt-1">
-                        QRY Total
-                      </p>
-                    </>
-                  )}
+                    {activeItem?.name ?? "—"}
+                  </span>
+                  <span className="text-text-muted">·</span>
+                  <span className="text-sm font-mono text-text-primary">
+                    {activeItem?.tokens ?? ""}
+                  </span>
+                  <span className="text-text-muted">·</span>
+                  <span className="text-sm font-mono text-text-primary">
+                    {activeItem ? `${activeItem.value}%` : ""}
+                  </span>
                 </div>
+              </div>
+
+              <div className="absolute inset-x-0 top-12 bottom-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={data}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={100}
+                      outerRadius={170}
+                      paddingAngle={2}
+                      dataKey="value"
+                      stroke="none"
+                      onMouseEnter={onPieEnter}
+                      onMouseLeave={onPieLeave}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {data.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={entry.color}
+                          opacity={activeIndex !== null && activeIndex !== index ? 0.35 : 1}
+                          stroke={activeIndex === index ? entry.color : "none"}
+                          strokeWidth={activeIndex === index ? 2 : 0}
+                          style={{
+                            transition: "opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), filter 0.8s cubic-bezier(0.4, 0, 0.2, 1), stroke-width 0.5s ease",
+                            filter: activeIndex === index ? `drop-shadow(0 0 12px ${entry.color}50)` : "none",
+                          }}
+                        />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* 3D rocking coin always in the donut hole */}
+              <div className="absolute inset-x-0 top-12 bottom-0 flex items-center justify-center pointer-events-none">
+                <QuarryToken size={150} glow={false} />
               </div>
             </div>
           </BlurFade>

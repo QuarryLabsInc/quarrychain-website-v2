@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import BlurFade from "@/components/ui/blur-fade";
 import { cn } from "@/lib/utils";
 import type { ShapeType } from "@/components/three/WireframeShape";
+import QuarryToken from "@/components/ui/QuarryToken";
 
 const WireframeShape = dynamic(() => import("@/components/three/WireframeShape"), {
   ssr: false,
@@ -25,6 +26,7 @@ interface PageHeroProps {
   shape?: ShapeType;
   shapeColors?: { primary: string; secondary: string; tertiary?: string };
   className?: string;
+  showTokenInHeadline?: boolean;
 }
 
 export default function PageHero({
@@ -35,13 +37,14 @@ export default function PageHero({
   shape,
   shapeColors,
   className,
+  showTokenInHeadline,
 }: PageHeroProps) {
   // If no shape, centered layout (fallback)
   if (!shape) {
     return (
       <section className={cn("py-24 lg:py-32 px-6", className)}>
         <div className="mx-auto max-w-3xl text-center">
-          <HeroContent label={label} headline={headline} subheadline={subheadline} ctas={ctas} center />
+          <HeroContent label={label} headline={headline} subheadline={subheadline} ctas={ctas} center showTokenInHeadline={showTokenInHeadline} />
         </div>
       </section>
     );
@@ -59,7 +62,7 @@ export default function PageHero({
 
       {/* Centered text on top */}
       <div className="relative z-10 mx-auto max-w-3xl text-center">
-        <HeroContent label={label} headline={headline} subheadline={subheadline} ctas={ctas} center />
+        <HeroContent label={label} headline={headline} subheadline={subheadline} ctas={ctas} center showTokenInHeadline={showTokenInHeadline} />
       </div>
     </section>
   );
@@ -71,12 +74,14 @@ function HeroContent({
   subheadline,
   ctas,
   center,
+  showTokenInHeadline,
 }: {
   label?: string;
   headline: string;
   subheadline?: string;
   ctas?: PageHeroCTA[];
   center?: boolean;
+  showTokenInHeadline?: boolean;
 }) {
   return (
     <>
@@ -90,7 +95,12 @@ function HeroContent({
 
       <BlurFade delay={0.05}>
         <h1 className={cn("text-4xl md:text-5xl lg:text-6xl font-bold font-display text-text-primary leading-tight", center && "text-center")}>
-          {headline}
+          {showTokenInHeadline ? (
+            <span className="inline-flex items-center justify-center gap-3">
+              <QuarryToken size={56} glow={false} />
+              <span>{headline}</span>
+            </span>
+          ) : headline}
         </h1>
       </BlurFade>
 

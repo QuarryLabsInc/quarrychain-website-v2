@@ -22,6 +22,7 @@ export default function TokenomicsPage() {
           secondary: "#14b8a6",
           tertiary: "#3b82f6",
         }}
+        showTokenInHeadline
       />
 
       {/* Token Allocation */}
