@@ -6,6 +6,7 @@ import PageHero from "@/components/layout/PageHero";
 import BlurFade from "@/components/ui/blur-fade";
 import SpotlightCard from "@/components/ui/spotlight-card";
 import DownloadableShape from "@/components/three/DownloadableShape";
+import QuarryToken from "@/components/ui/QuarryToken";
 
 // ===== Color Data =====
 
@@ -66,16 +67,6 @@ const FONTS = [
     sample: "GOVERNANCE · BUILD ON QUARRYCHAIN · 100,000 TPS",
     className: "font-mono",
   },
-];
-
-// ===== Logo Assets =====
-
-const LOGOS = [
-  { name: "Icon + Wordmark", file: "/logo-hero.png", desc: "Primary use — navbar, hero, decks" },
-  { name: "Icon Only (SVG)", file: "/logo.svg", desc: "Favicons, social avatars, app icons" },
-  { name: "Wordmark (SVG)", file: "/quarrychain_name.svg", desc: "Footer, document headers" },
-  { name: "Original Mark", file: "/logo-original.png", desc: "Original logo variant" },
-  { name: "Nav Icon", file: "/nav_icon.png", desc: "Small icon variant" },
 ];
 
 // ===== Voice Data =====
@@ -272,32 +263,74 @@ export default function BrandPage() {
           </BlurFade>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {LOGOS.map((logo, i) => (
-              <BlurFade key={logo.name} delay={0.05 + i * 0.05}>
-                <SpotlightCard spotlightColor="rgba(59, 130, 246, 0.08)" className="h-full">
-                  <div className="p-6">
-                    {/* Preview */}
-                    <div className="h-24 rounded-lg bg-bg-primary border border-white/5 flex items-center justify-center mb-4">
-                      <img
-                        src={logo.file}
-                        alt={logo.name}
-                        className="max-h-16 max-w-[80%] object-contain"
-                      />
+            {/* Icon + Wordmark — exact navbar treatment */}
+            <BlurFade delay={0.05}>
+              <SpotlightCard spotlightColor="rgba(59, 130, 246, 0.08)" className="h-full">
+                <div className="p-6">
+                  <div className="h-32 rounded-lg bg-bg-primary border border-white/5 flex items-center justify-center mb-4">
+                    <div className="flex items-center gap-2.5">
+                      <img src="/logo-original.png" alt="" className="h-10 w-10" />
+                      <span className="text-2xl font-bold font-display">
+                        <span className="text-qc-blue">Quarry</span>
+                        <span className="text-text-primary">Chain</span>
+                      </span>
                     </div>
-                    <h3 className="text-sm font-bold text-text-primary mb-1">{logo.name}</h3>
-                    <p className="text-xs text-text-muted mb-3">{logo.desc}</p>
-                    <a
-                      href={logo.file}
-                      download
-                      className="inline-flex items-center gap-1.5 text-xs font-mono text-qc-teal hover:text-qc-teal-glow transition-colors"
-                    >
-                      <Download className="w-3 h-3" />
-                      Download
-                    </a>
                   </div>
-                </SpotlightCard>
-              </BlurFade>
-            ))}
+                  <h3 className="text-sm font-bold text-text-primary mb-1">Icon + Wordmark</h3>
+                  <p className="text-xs text-text-muted mb-3">Primary use — navbar, hero, decks</p>
+                  <a
+                    href="/logo-icon-wordmark.svg"
+                    download
+                    className="inline-flex items-center gap-1.5 text-xs font-mono text-qc-teal hover:text-qc-teal-glow transition-colors"
+                  >
+                    <Download className="w-3 h-3" />
+                    Download SVG
+                  </a>
+                </div>
+              </SpotlightCard>
+            </BlurFade>
+
+            {/* Icon Only */}
+            <BlurFade delay={0.10}>
+              <SpotlightCard spotlightColor="rgba(59, 130, 246, 0.08)" className="h-full">
+                <div className="p-6">
+                  <div className="h-32 rounded-lg bg-bg-primary border border-white/5 flex items-center justify-center mb-4">
+                    <img src="/logo-original.png" alt="QuarryChain icon" className="h-20 w-20" />
+                  </div>
+                  <h3 className="text-sm font-bold text-text-primary mb-1">Icon</h3>
+                  <p className="text-xs text-text-muted mb-3">Favicons, social avatars, app icons</p>
+                  <a
+                    href="/logo-original.png"
+                    download
+                    className="inline-flex items-center gap-1.5 text-xs font-mono text-qc-teal hover:text-qc-teal-glow transition-colors"
+                  >
+                    <Download className="w-3 h-3" />
+                    Download
+                  </a>
+                </div>
+              </SpotlightCard>
+            </BlurFade>
+
+            {/* $QRY 3D Token — live rocking coin */}
+            <BlurFade delay={0.15}>
+              <SpotlightCard spotlightColor="rgba(20, 184, 166, 0.10)" className="h-full">
+                <div className="p-6">
+                  <div className="h-32 rounded-lg bg-bg-primary border border-white/5 flex items-center justify-center mb-4 overflow-hidden">
+                    <QuarryToken size={104} glow={false} />
+                  </div>
+                  <h3 className="text-sm font-bold text-text-primary mb-1">$QRY 3D Token</h3>
+                  <p className="text-xs text-text-muted mb-3">Token mark — tokenomics, ICO, swap UI</p>
+                  <a
+                    href="/quarry-token.svg"
+                    download
+                    className="inline-flex items-center gap-1.5 text-xs font-mono text-qc-teal hover:text-qc-teal-glow transition-colors"
+                  >
+                    <Download className="w-3 h-3" />
+                    Download SVG
+                  </a>
+                </div>
+              </SpotlightCard>
+            </BlurFade>
           </div>
 
           {/* Logo rules */}
