@@ -156,7 +156,7 @@ export default function ICOPage() {
         ctas={[
           {
             text: "Register for ICO",
-            href: "https://quarrychain-4pzmvo3c8-garvonious-uis-projects.vercel.app/",
+            href: "https://ico.quarrychain.network",
             primary: true,
           },
         ]}
