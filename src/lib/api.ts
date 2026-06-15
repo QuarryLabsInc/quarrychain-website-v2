@@ -1,5 +1,5 @@
 const BLOCKSCOUT_URL =
-  process.env.NEXT_PUBLIC_BLOCKSCOUT_URL || "https://test.quarrychain.network";
+  process.env.NEXT_PUBLIC_BLOCKSCOUT_URL || "https://explorer.testnet.quarrychain.network";
 
 export interface NetworkStats {
   totalBlocks: number;

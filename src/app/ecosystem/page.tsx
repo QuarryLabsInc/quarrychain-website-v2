@@ -20,7 +20,7 @@ type Product = {
 const PRODUCTS: Product[] = [
   { name: "QuarrySwap", description: "Non-custodial DEX with AMM liquidity pools and yield farming.", href: "/ecosystem/quarryswap", icon: ArrowLeftRight, color: "text-qc-green", bg: "bg-qc-green/10" },
   { name: "QuarryWallet", description: "Self-custodial wallet for QRY and QRC-20 tokens.", href: "/ecosystem/quarrywallet", icon: Wallet, color: "text-qc-blue", bg: "bg-qc-blue/10" },
-  { name: "QuarryScan", description: "Block explorer. Every transaction, every contract.", href: "https://test.quarrychain.network", icon: Search, external: true, color: "text-qc-red", bg: "bg-qc-red/10" },
+  { name: "QuarryScan", description: "Block explorer. Every transaction, every contract.", href: "https://explorer.testnet.quarrychain.network", icon: Search, external: true, color: "text-qc-red", bg: "bg-qc-red/10" },
   { name: "QVM", description: "EVM-compatible virtual machine. Solidity-native.", href: "/developers", icon: Cpu, color: "text-qc-teal", bg: "bg-qc-teal/10" },
   { name: "QRC-20 Tokens", description: "Launch tokens with the standard developers already know.", href: "/technology", icon: Coins, color: "text-qc-blue", bg: "bg-qc-blue/10" },
   { name: "Asset Tokenization", description: "Real-world assets on-chain. Trade 24/7.", href: "/ecosystem/asset-tokenization", icon: Building, color: "text-qc-green", bg: "bg-qc-green/10" },

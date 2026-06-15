@@ -2,7 +2,7 @@
 
 ## Blockscout API (Testnet)
 
-Base URL: `https://test.quarrychain.network`
+Base URL: `https://explorer.testnet.quarrychain.network`
 
 ### Endpoints
 ```

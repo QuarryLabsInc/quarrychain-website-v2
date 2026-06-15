@@ -97,7 +97,7 @@ const STEPS = [
 const RESOURCES = [
   { title: "Documentation", description: "API reference and developer guides", href: "#", icon: BookOpen, comingSoon: true },
   { title: "GitHub", description: "Open source repositories", href: "https://github.com/QuarryLabsInc", icon: ExternalLink, external: true },
-  { title: "Testnet Explorer", description: "QuarryScan on testnet", href: "https://test.quarrychain.network", icon: Search, external: true },
+  { title: "Testnet Explorer", description: "QuarryScan on testnet", href: "https://explorer.testnet.quarrychain.network", icon: Search, external: true },
   { title: "Testnet Faucet", description: "Get testnet QRY tokens", href: "#", icon: Droplets, comingSoon: true },
   { title: "QRC-20 Standard", description: "Token standard reference", href: "/technology", icon: FileCode },
   { title: "SDKs & Tools", description: "Web3.js, Ethers.js compatible", href: "#", icon: Wrench, comingSoon: true },

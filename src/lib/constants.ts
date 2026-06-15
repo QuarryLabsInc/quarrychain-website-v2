@@ -237,7 +237,7 @@ export const ECOSYSTEM = [
     name: "QuarryScan",
     tagline: "Block explorer. Every transaction, every contract.",
     icon: "Search",
-    href: "https://test.quarrychain.network",
+    href: "https://explorer.testnet.quarrychain.network",
     external: true,
   },
   {

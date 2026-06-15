@@ -17,7 +17,7 @@ const FOOTER_COLUMNS = [
     links: [
       { label: "QuarrySwap", href: "/ecosystem/quarryswap" },
       { label: "QuarryWallet", href: "/ecosystem/quarrywallet" },
-      { label: "QuarryScan", href: "https://test.quarrychain.network", external: true },
+      { label: "QuarryScan", href: "https://explorer.testnet.quarrychain.network", external: true },
       { label: "Asset Tokenization", href: "/ecosystem/asset-tokenization" },
     ],
   },
